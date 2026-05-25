@@ -397,7 +397,7 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
     </div>
 
     <footer>
-      <p>Created by Antigravity | Pair programming with Suzuki Wataru</p>
+      <p>Created by Antigravity</p>
     </footer>
 
   </div>
