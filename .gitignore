@@ -1,0 +1,13 @@
+# Serena local configurations & cache
+.serena/
+
+# macOS system files
+.DS_Store
+
+# Haskell build directories and files
+dist-newstyle/
+.stack-work/
+*.o
+*.hi
+*.dyn_o
+*.dyn_hi
