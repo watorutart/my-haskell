@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Haskell 今日の学びクイズ - 2026.05.29</title>
+  
+  <!-- プレミアムフォント -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide アイコン CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- 紙吹雪演出用ライブラリ -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* デザインシステム & リセット */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #080c14;
+      --bg-secondary: #0f172a;
+      --bg-glass: rgba(15, 23, 42, 0.65);
+      --bg-glass-hover: rgba(30, 41, 59, 0.8);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(99, 102, 241, 0.15);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      --accent-primary: #6366f1; /* インディゴ */
+      --accent-secondary: #a855f7; /* パープル */
+      --accent-success: #10b981; /* エメラルド */
+      --accent-error: #f43f5e; /* ローズ */
+      
+      --glow-accent: rgba(99, 102, 241, 0.25);
+      --glow-success: rgba(16, 185, 129, 0.25);
+      --glow-error: rgba(244, 63, 94, 0.25);
+      
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+      padding: 2rem 1rem;
+    }
+
+    /* 背景グラデーション演出 */
+    body::before, body::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-primary) 0%, rgba(99, 102, 241, 0) 70%);
+      opacity: 0.15;
+      z-index: -1;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    body::before {
+      top: -10%;
+      left: -10%;
+    }
+
+    body::after {
+      bottom: -10%;
+      right: -10%;
+      background: radial-gradient(circle, var(--accent-secondary) 0%, rgba(168, 85, 247, 0) 70%);
+      opacity: 0.12;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 680px;
+      z-index: 10;
+    }
+
+    /* ヘッダー */
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.25;
+      background: linear-gradient(135deg, #ffffff 30%, #c7d2fe 70%, #e0a7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    /* プログレスバー */
+    .progress-wrapper {
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+      border-radius: 10px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 12px var(--accent-primary);
+    }
+
+    /* メインカード */
+    .card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+      margin-bottom: 1.5rem;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex-grow: 1;
+    }
+
+    .question-number {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    .question-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+
+    /* コードブロック */
+    pre {
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .code-lang {
+      position: absolute;
+      top: 6px;
+      right: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* 選択肢リスト */
+    .choices-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .choice-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1.5px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-primary);
+      transition: var(--transition-smooth);
+      position: relative;
+      text-align: left;
+      outline: none;
+    }
+
+    .choice-card:hover:not(.checked) {
+      background: var(--bg-glass-hover);
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
+    }
+
+    .choice-index {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .choice-card:hover:not(.checked) .choice-index {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: white;
+    }
+
+    /* 正解・不正解ステート */
+    .choice-card.correct {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--accent-success);
+      box-shadow: 0 8px 24px var(--glow-success);
+    }
+
+    .choice-card.correct .choice-index {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .choice-card.incorrect {
+      background: rgba(244, 63, 94, 0.08);
+      border-color: var(--accent-error);
+      box-shadow: 0 8px 24px var(--glow-error);
+      opacity: 0.7;
+    }
+
+    .choice-card.incorrect .choice-index {
+      background: var(--accent-error);
+      border-color: var(--accent-error);
+      color: white;
+    }
+
+    .choice-card.dimmed {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* 解説パネル */
+    .explanation-panel {
+      margin-top: 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1.25rem;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      display: none;
+    }
+
+    .explanation-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .explanation-header.correct-text { color: var(--accent-success); }
+    .explanation-header.incorrect-text { color: var(--accent-error); }
+
+    .explanation-body {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    /* アクションボタン */
+    .action-container {
+      margin-top: auto;
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 1rem;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+      border: none;
+      color: white;
+      padding: 0.85rem 1.8rem;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition-smooth);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(99, 102, 241, 0.45);
+    }
+
+    /* 結果画面 */
+    .results-screen {
+      text-align: center;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .trophy-icon {
+      color: #eab308;
+      width: 72px;
+      height: 72px;
+      filter: drop-shadow(0 4px 12px rgba(234, 179, 8, 0.4));
+      margin-bottom: 1.5rem;
+    }
+
+    .results-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ffffff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .results-stats {
+      display: flex;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      min-width: 120px;
+    }
+
+    .stat-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent-primary);
+    }
+
+    .stat-val.success-color { color: var(--accent-success); }
+
+    .stat-lbl {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .results-message {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      max-width: 440px;
+    }
+
+    /* シンタックスハイライト風のカラー */
+    .keyword { color: #f472b6; font-weight: bold; }
+    .comment { color: #64748b; font-style: italic; }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <header>
+      <div class="badge">
+        <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
+        <span>Haskell Learning Review</span>
+      </div>
+      <h1>今日の学びクイズ</h1>
+      <p class="subtitle">2026.05.29 — Int/Integer、Float/Double、タプルの型についての3問</p>
+    </header>
+
+    <div class="progress-wrapper">
+      <div class="progress-meta">
+        <span id="current-question-num">Question 1 of 3</span>
+        <span id="score-meta">Score: 0 / 0</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+    </div>
+
+    <div class="card" id="quiz-card">
+      
+      <!-- クイズ画面 -->
+      <div class="question-screen" id="question-screen">
+        <div class="question-number" id="screen-q-num">Question 1</div>
+        <div class="question-text" id="screen-q-text">質問テキスト</div>
+        
+        <pre><div class="code-lang">haskell</div><code id="code-snippet">コード</code></pre>
+
+        <div class="choices-list" id="choices-container"></div>
+
+        <!-- 解説パネル -->
+        <div class="explanation-panel" id="explanation-panel">
+          <div class="explanation-header" id="explanation-title"></div>
+          <div class="explanation-body" id="explanation-text"></div>
+        </div>
+
+        <div class="action-container" id="action-container" style="display: none;">
+          <button class="btn" id="next-btn">
+            <span>Next Question</span>
+            <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 結果画面 -->
+      <div class="results-screen" id="results-screen">
+        <i data-lucide="trophy" class="trophy-icon"></i>
+        <h2 class="results-title">Quiz Completed!</h2>
+        <p class="results-message" id="results-achievement-text">素晴らしい！今日のHaskellの学びが身についています！</p>
+        
+        <div class="results-stats">
+          <div class="stat-box">
+            <div class="stat-val success-color" id="final-score">3 / 3</div>
+            <div class="stat-lbl">正解数</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="final-accuracy">100%</div>
+            <div class="stat-lbl">正解率</div>
+          </div>
+        </div>
+
+        <button class="btn" id="retry-btn">
+          <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
+          <span>もう一度挑戦する</span>
+        </button>
+      </div>
+
+    </div>
+
+    <footer>
+      <p>Created by Antigravity</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // クイズのデータ
+    const quizData = [
+      {
+        qNumText: "Question 1",
+        question: "今日のコードでは階乗を計算する <code>factorial</code> 関数を定義しました。もし、関数の型シグネチャを <code>Integer -> Integer</code> から <code>Int -> Int</code> に変更して <code>factorial 50</code> を実行した場合、64ビット環境でどのような結果になるでしょうか？",
+        code: `<span class="comment">-- 元の定義</span>
+<span class="keyword">factorial</span> :: Integer -&gt; Integer
+<span class="keyword">factorial</span> n = product [1..n]
+
+<span class="comment">-- 変更後の定義</span>
+<span class="keyword">factorial'</span> :: Int -&gt; Int
+<span class="keyword">factorial'</span> n = product [1..n]`,
+        choices: [
+          { text: "自動的に多倍長整数（Integer）に型変換され、正しい階乗計算の結果が表示される", isCorrect: false },
+          { text: "<code>Int</code> 型の範囲を超えるため、実行時に「オーバーフローエラー（例外）」が発生して強制終了する", isCorrect: false },
+          { text: "計算途中でオーバーフローが発生し、エラーにならずに <code>0</code> などの予期せぬ値が返る", isCorrect: true },
+          { text: "Haskellでは <code>Int</code> は無制限の整数を表すため、型を変えても全く同じ正しい結果が返る", isCorrect: false }
+        ],
+        explanation: "Haskellの <code>Int</code> 型は有界（上限と下限がある固定精度整数）であり、一般的な64ビット環境では -2^63 から 2^63-1 までの値を扱います。この範囲を超える計算（50の階乗など）を行っても、Haskellでは自動的な型拡張（Integerへの変換）や実行時エラーの発生は行われず、<strong>サイレントにオーバーフロー（桁あふれ）</strong>が発生し、予期しない値（2の累積数が多いため <code>0</code> など）を返します。大きな値を正確に計算したい場合は、範囲制限のない <code>Integer</code> 型を使用する必要があります！"
+      },
+      {
+        qNumText: "Question 2",
+        question: "Haskellの単精度浮動小数点数型 <code>Float</code> と、倍精度浮動小数点数型 <code>Double</code> に関する説明として、最も適切なものはどれでしょうか？",
+        code: `<span class="comment">-- Float を使用する円周計算</span>
+<span class="keyword">circumference</span> :: Float -&gt; Float
+<span class="keyword">circumference</span> r = 2 * pi * r   <span class="comment">-- 結果: 25.132742</span>
+
+<span class="comment">-- Double を使用する円周計算</span>
+<span class="keyword">circumference'</span> :: Double -&gt; Double
+<span class="keyword">circumference'</span> r = 2 * pi * r  <span class="comment">-- 結果: 25.132741228718345</span>`,
+        choices: [
+          { text: "<code>Double</code> 型は <code>Float</code> 型に比べて2倍のメモリ量（64ビット）を使用するが、より高い精度（小数点以下の多くの桁数）で実数を表現できる", isCorrect: true },
+          { text: "<code>Float</code> と <code>Double</code> は名前が違うだけで、保持できる桁数や内部の精度は完全に同一である", isCorrect: false },
+          { text: "<code>Double</code> は浮動小数点数ではなく、小数の四捨五入を自動的に行う特殊な整数型である", isCorrect: false },
+          { text: "Haskellでは <code>Float</code> の方が <code>Double</code> よりも高精度な計算に適しているため、常に <code>Float</code> を使うべきである", isCorrect: false }
+        ],
+        explanation: "Haskellの <code>Double</code> 型は倍精度浮動小数点数（64ビット）であり、<code>Float</code> 型（単精度浮動小数点数、32ビット）に比べて約2倍のビット数を用いて実数を表現します。そのため、今日のメモの実行結果でも確認できるように、<code>Double</code> を使った <code>circumference'</code> の方が、<code>Float</code> の <code>circumference</code> よりも非常に多くの桁数まで高い精度で円周を計算できています！精密な科学計算や金融計算のシミュレーション等では <code>Double</code> がよく使われます。"
+      },
+      {
+        qNumText: "Question 3",
+        question: "Haskellのタプル（Tuple）に関する以下の記述のうち、**誤っているもの**はどれでしょうか？",
+        code: `<span class="comment">-- タプルの例</span>
+<span class="keyword">val1</span> = (1, 'A')
+<span class="keyword">val2</span> = (1, 'A', 3.0)
+<span class="keyword">val3</span> = ()`,
+        choices: [
+          { text: "タプルは異なる型の要素（例: <code>Int</code> と <code>Char</code>）を混在させて格納することができる", isCorrect: false },
+          { text: "<code>(Int, Char)</code> 型のタプルと <code>(Char, Int)</code> 型のタプルは、要素の順番が異なるだけで中身が同じなら同一の型として扱われる", isCorrect: true },
+          { text: "<code>val1</code> と <code>val2</code> は要素の数が異なるため、全く別の型として扱われる", isCorrect: false },
+          { text: "空のタプル <code>()</code> も一つの型（ユニット型）であり、この型が持つ値は <code>()</code> の1つだけである", isCorrect: false }
+        ],
+        explanation: "タプルの型は「要素の数（サイズ）」と「それぞれの要素 of 型（およびその記述順序）」によって厳密に定義されます。したがって、<code>(Int, Char)</code> と <code>(Char, Int)</code> は全く異なる型であり、互いに代入したりすることはできません。また、空のタプル <code>()</code> は「ユニット（Unit）」型と呼ばれ、値としても <code>()</code> というただ1つだけの値を持つ特別な型です。関数が実質的な値を返さない場合などに利用されます！"
+      }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let answered = false;
+
+    const qNumElement = document.getElementById("screen-q-num");
+    const qTextElement = document.getElementById("screen-q-text");
+    const codeSnippet = document.getElementById("code-snippet");
+    const choicesContainer = document.getElementById("choices-container");
+    const explanationPanel = document.getElementById("explanation-panel");
+    const explanationTitle = document.getElementById("explanation-title");
+    const explanationText = document.getElementById("explanation-text");
+    const actionContainer = document.getElementById("action-container");
+    const nextBtn = document.getElementById("next-btn");
+    
+    const currentQMeta = document.getElementById("current-question-num");
+    const scoreMeta = document.getElementById("score-meta");
+    const progressBar = document.getElementById("progress-bar");
+    
+    const resultsScreen = document.getElementById("results-screen");
+    const questionScreen = document.getElementById("question-screen");
+    const finalScore = document.getElementById("final-score");
+    const finalAccuracy = document.getElementById("final-accuracy");
+    const resultsAchievementText = document.getElementById("results-achievement-text");
+    const retryBtn = document.getElementById("retry-btn");
+
+    lucide.createIcons();
+
+    function loadQuestion(idx) {
+      answered = false;
+      explanationPanel.style.display = "none";
+      actionContainer.style.display = "none";
+      
+      const qData = quizData[idx];
+      qNumElement.innerHTML = qData.qNumText;
+      qTextElement.innerHTML = qData.question;
+      codeSnippet.innerHTML = qData.code;
+      
+      currentQMeta.innerText = `Question ${idx + 1} of ${quizData.length}`;
+      scoreMeta.innerText = `Score: ${score} / ${idx}`;
+      progressBar.style.width = `${(idx / quizData.length) * 100}%`;
+
+      choicesContainer.innerHTML = "";
+      qData.choices.forEach((choice, cIdx) => {
+        const choiceCard = document.createElement("button");
+        choiceCard.className = "choice-card";
+        choiceCard.innerHTML = `
+          <div class="choice-index">${String.fromCharCode(65 + cIdx)}</div>
+          <div class="choice-content">${choice.text}</div>
+        `;
+        choiceCard.addEventListener("click", () => handleChoiceSelect(cIdx));
+        choicesContainer.appendChild(choiceCard);
+      });
+    }
+
+    function handleChoiceSelect(choiceIdx) {
+      if (answered) return;
+      answered = true;
+
+      const qData = quizData[currentIdx];
+      const selectedChoice = qData.choices[choiceIdx];
+      const correctChoiceIdx = qData.choices.findIndex(c => c.isCorrect);
+
+      const allChoiceCards = document.querySelectorAll(".choice-card");
+      allChoiceCards.forEach((card, idx) => {
+        card.classList.add("checked");
+        if (idx === correctChoiceIdx) {
+          card.classList.add("correct");
+        } else if (idx === choiceIdx) {
+          card.classList.add("incorrect");
+        } else {
+          card.classList.add("dimmed");
+        }
+      });
+
+      const isCorrect = selectedChoice.isCorrect;
+      if (isCorrect) {
+        score++;
+        playConfetti(0.3);
+        explanationTitle.className = "explanation-header correct-text";
+        explanationTitle.innerHTML = `
+          <i data-lucide="check-circle-2" style="color: var(--accent-success); width: 20px; height: 20px;"></i>
+          <span>正解！素晴らしい理解です！</span>
+        `;
+      } else {
+        explanationTitle.className = "explanation-header incorrect-text";
+        explanationTitle.innerHTML = `
+          <i data-lucide="x-circle" style="color: var(--accent-error); width: 20px; height: 20px;"></i>
+          <span>惜しい！次は正解できます！</span>
+        `;
+      }
+
+      explanationText.innerHTML = qData.explanation;
+      explanationPanel.style.display = "block";
+      actionContainer.style.display = "flex";
+      
+      scoreMeta.innerText = `Score: ${score} / ${currentIdx + 1}`;
+      lucide.createIcons();
+    }
+
+    function playConfetti(scalar = 1) {
+      confetti({
+        particleCount: Math.floor(80 * scalar),
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#6366f1', '#a855f7', '#10b981', '#fbbf24']
+      });
+    }
+
+    function playMassiveConfetti() {
+      const duration = 2.5 * 1000;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#6366f1', '#a855f7', '#10b981'] });
+        confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#6366f1', '#a855f7', '#10b981'] });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      }());
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentIdx++;
+      if (currentIdx < quizData.length) {
+        loadQuestion(currentIdx);
+      } else {
+        showResults();
+      }
+    });
+
+    function showResults() {
+      questionScreen.style.display = "none";
+      resultsScreen.style.display = "flex";
+      progressBar.style.width = "100%";
+      currentQMeta.innerText = `Quiz Completed`;
+      
+      finalScore.innerText = `${score} / ${quizData.length}`;
+      const accuracyPercent = Math.round((score / quizData.length) * 100);
+      finalAccuracy.innerText = `${accuracyPercent}%`;
+
+      if (accuracyPercent === 100) {
+        resultsAchievementText.innerText = "パーフェクト！今日のHaskellの学びが完璧に身についています！🏆";
+        playMassiveConfetti();
+      } else if (accuracyPercent >= 60) {
+        resultsAchievementText.innerText = "お見事！かなりHaskellの感覚が掴めてきていますね！✨";
+        playConfetti(1);
+      } else {
+        resultsAchievementText.innerText = "お疲れ様でした！もう一度解き直して、エラーの挙動などを確認してみましょう！📚";
+      }
+    }
+
+    retryBtn.addEventListener("click", () => {
+      currentIdx = 0;
+      score = 0;
+      questionScreen.style.display = "flex";
+      resultsScreen.style.display = "none";
+      loadQuestion(currentIdx);
+    });
+
+    loadQuestion(currentIdx);
+  </script>
+</body>
+</html>
