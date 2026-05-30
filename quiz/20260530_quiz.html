@@ -1,62 +1,9 @@
-# Skill: Haskell Interactive Learning Quiz Generator
-
-This skill instructs the agent on how to automatically generate a beautiful, interactive HTML quiz based on the user's daily Haskell learning notes (like `memo.md`).
-
----
-
-## 🎯 Goal
-Create an interactive, premium-designed, gamified HTML quiz review page for the user's daily study session. The quiz should test gotchas, core concepts, and code execution results.
-
----
-
-## 📋 Step-by-Step Instructions
-
-### Step 1: Analyze Learning Notes
-- Locate and read the user's daily learning notes (e.g., `memo.md` in the workspace).
-- Determine the number of questions to generate:
-  - By default, generate **3 questions**.
-  - If the volume or content of today's notes is high (e.g., covering many different topics, long descriptions, or multiple sub-sections), dynamically scale the number of questions, up to a maximum of **10 questions**.
-- Identify the key topics, "gotchas", syntax nuances, or common errors mentioned in today's notes to match the decided number of questions.
-- Focus on questions that test *why* a behavior occurs (conceptual understanding) rather than just trivial recall.
-
-### Step 2: Formulate Dynamic Questions (3 to 10 Questions)
-- Formulate the decided number of questions (minimum 3, maximum 10) covering a diverse range of topics:
-  - Core syntax/operation or gotcha (e.g., Range behavior, lazy evaluation).
-  - Function behavior (e.g., `tail`, `init`, `head` on empty list, boundary cases).
-  - Types and list structures (e.g., `Char` vs `String` list concatenation, operator differences like `:` vs `++`).
-  - Any new advanced/specific topics or nuances introduced in the notes.
-- For each question:
-  - Create exactly **4 multiple-choice options** (A, B, C, D).
-  - Ensure only **one** option is correct.
-  - Write a clear, encouraging, and highly educational explanation for the answer, citing the reason why Haskell behaves this way.
-
-### Step 3: Populate the Interactive HTML Template
-- Use the **Premium HTML & CSS Template** below.
-- Replace the following placeholders in the template:
-  - **Date**: Find the current local time / date and format it as `YYYY.MM.DD` (e.g., `2026.05.25`).
-  - **Subtitle**: Change `{YYYY.MM.DD} — リスト・レンジ・型についての3問` to `{YYYY.MM.DD} — {学習トピック}についての{N}問` matching the actual number of generated questions `{N}`.
-  - **Quiz Data (`quizData` array in JS)**: Inject the questions, code snippets, choices, and explanations exactly in the structure specified.
-- Use syntax-colored HTML tags (like `<span class="keyword">`, `<span class="comment">`) in the JS code blocks to match the dark editor style.
-
-### Step 4: Write and Execute
-- Save the completed HTML page to `/quiz/{YYYYMMDD}_quiz.html` (e.g., `/quiz/20260525_quiz.html`).
-- **Do not overwrite** past quizzes unless explicitly asked to do so; always create a new dated file.
-- Proactively run terminal commands to open the quiz file for the user (e.g., `open quiz/{YYYYMMDD}_quiz.html` on Mac).
-- Present a concise, polite summary in the chat of today's quiz topics and how to access the file.
-
----
-
-## 💎 Premium HTML & CSS Template
-
-Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, the document title, and subtitle metadata.
-
-```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Haskell 今日の学びクイズ - {YYYY.MM.DD}</title>
+  <title>Haskell 今日の学びクイズ - 2026.05.30</title>
   
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -322,6 +269,10 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
     /* Syntax Highlighting */
     .keyword { color: #f472b6; font-weight: bold; }
     .comment { color: #64748b; font-style: italic; }
+    .string { color: #86efac; }
+    .number { color: #fb923c; }
+    .type { color: #67e8f9; }
+    .func { color: #a5b4fc; }
 
     @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -340,12 +291,12 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
         <span>Haskell Learning Review</span>
       </div>
       <h1>今日の学びクイズ</h1>
-      <p class="subtitle">{YYYY.MM.DD} — {学習トピック}についての{N}問</p>
+      <p class="subtitle">2026.05.30 — 型クラス・型変数・Read/Showについての7問</p>
     </header>
 
     <div class="progress-wrapper">
       <div class="progress-meta">
-        <span id="current-question-num">Question 1 of {N}</span>
+        <span id="current-question-num">Question 1 of 7</span>
         <span id="score-meta">Score: 0 / 0</span>
       </div>
       <div class="progress-bar-container">
@@ -385,7 +336,7 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
         
         <div class="results-stats">
           <div class="stat-box">
-            <div class="stat-val success-color" id="final-score">{N} / {N}</div>
+            <div class="stat-val success-color" id="final-score">7 / 7</div>
             <div class="stat-lbl">正解数</div>
           </div>
           <div class="stat-box">
@@ -413,17 +364,100 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
     const quizData = [
       {
         qNumText: "Question 1",
-        question: "質問テキスト",
-        code: `Haskellコードスニペット`,
+        question: "次のGHCiの出力を見て、<code>head</code> 関数の型シグネチャで使われている <code>a</code> は何を表していますか？",
+        code: `<span class="func">ghci</span>> :t head
+<span class="func">head</span> :: GHC.Stack.Types.HasCallStack => [<span class="type">a</span>] -> <span class="type">a</span>`,
         choices: [
-          { text: "選択肢A", isCorrect: false },
-          { text: "選択肢B (正解)", isCorrect: true },
-          { text: "選択肢C", isCorrect: false },
-          { text: "選択肢D", isCorrect: false }
+          { text: "型クラスの名前（例：Eq や Ord のような）", isCorrect: false },
+          { text: "型変数 — 任意の型を受け取れることを示すプレースホルダー", isCorrect: true },
+          { text: "リスト型を表す特別なキーワード", isCorrect: false },
+          { text: "関数の引数の個数を示す記号", isCorrect: false }
         ],
-        explanation: "正解の解説テキスト。"
+        explanation: "<strong>型変数</strong>（type variable）です。<code>a</code> は具体的な型（<code>Int</code>, <code>Char</code> など）の代わりに使われるプレースホルダーで、「どんな型でもOK」を意味します。<br>これにより <code>head</code> は <code>[Int]</code> にも <code>[Char]</code> にも使える<strong>多目的関数（polymorphic function）</strong>になります。型安全はコンパイル時に保証されるため、実行時エラーはありません。"
       },
-      // ...他の問題を追加（計3〜10問）
+      {
+        qNumText: "Question 2",
+        question: "次のコードを実行すると何が返りますか？",
+        code: `<span class="func">ghci</span>> :t fst
+<span class="func">fst</span> :: (<span class="type">a</span>, <span class="type">b</span>) -> <span class="type">a</span>
+
+<span class="func">ghci</span>> fst (<span class="number">42</span>, <span class="string">"hello"</span>)`,
+        choices: [
+          { text: '"hello"', isCorrect: false },
+          { text: "42", isCorrect: true },
+          { text: "(42, \"hello\")", isCorrect: false },
+          { text: "エラー：タプルの型が混在しているため", isCorrect: false }
+        ],
+        explanation: "<code>fst :: (a, b) -> a</code> はタプルの<strong>第1要素</strong>を返します。<br>ここで <code>a</code> と <code>b</code> は<strong>異なる型変数</strong>なので、タプルの各要素が違う型でも全く問題ありません。<code>fst (42, \"hello\")</code> は型 <code>(Int, String)</code> のタプルから <code>Int</code> 型の <code>42</code> を返します。"
+      },
+      {
+        qNumText: "Question 3",
+        question: "型クラス制約 <code>=></code> の左側（例えば <code>Eq a =></code>）は何を意味しますか？",
+        code: `<span class="func">ghci</span>> :t (==)
+(==) :: <span class="type">Eq</span> <span class="type">a</span> => <span class="type">a</span> -> <span class="type">a</span> -> <span class="keyword">Bool</span>`,
+        choices: [
+          { text: "a という型は必ず Int 型でなければならない", isCorrect: false },
+          { text: "この関数は2つの引数を取る", isCorrect: false },
+          { text: "型変数 a は Eq 型クラスのインスタンスである必要があるという制約", isCorrect: true },
+          { text: "関数が Bool 型を返すことを示すシンタックスシュガー", isCorrect: false }
+        ],
+        explanation: "<code>=></code> の左側は<strong>型クラス制約</strong>（typeclass constraint）と呼ばれます。<br><code>Eq a =></code> は「型変数 <code>a</code> は <code>Eq</code> 型クラスのインスタンスでなければならない」という意味です。つまり <code>==</code> は、等値性の比較が定義されている型（<code>Int</code>, <code>Char</code>, <code>String</code> など）にのみ使えます。<br>I/O型や関数型は <code>Eq</code> のインスタンスではないため、<code>==</code> で比較できません。"
+      },
+      {
+        qNumText: "Question 4",
+        question: "<code>compare</code> 関数の返り値の型 <code>Ordering</code> が取りうる値として、正しいものはどれですか？",
+        code: `<span class="func">ghci</span>> <span class="string">"Abrakagabra"</span> \`compare\` <span class="string">"Zebra"</span>
+<span class="type">LT</span>
+<span class="func">ghci</span>> <span class="number">5</span> \`compare\` <span class="number">3</span>
+<span class="type">GT</span>`,
+        choices: [
+          { text: "True / False / Equal", isCorrect: false },
+          { text: "Less / Greater / Same", isCorrect: false },
+          { text: "LT / EQ / GT", isCorrect: true },
+          { text: "-1 / 0 / 1（整数値）", isCorrect: false }
+        ],
+        explanation: "<code>Ordering</code> 型は <strong><code>LT</code>（Less Than：より小さい）</strong>、<strong><code>EQ</code>（Equal：等しい）</strong>、<strong><code>GT</code>（Greater Than：より大きい）</strong>の3つの値を持つ型です。<br>これは <code>Ord</code> 型クラスのメソッドである <code>compare</code> の返り値として使われます。<code>Ordering</code> 自体も <code>Enum</code> のインスタンスなので <code>[LT .. GT]</code> のようにレンジで使えます！"
+      },
+      {
+        qNumText: "Question 5",
+        question: "次のコードはなぜエラーになるのでしょうか？",
+        code: `<span class="func">ghci</span>> <span class="func">read</span> <span class="string">"4"</span>
+*** Exception: Prelude.read: no parse`,
+        choices: [
+          { text: "\"4\" は有効なHaskellの文字列ではないから", isCorrect: false },
+          { text: "read 関数は数値リテラルしか受け付けないから", isCorrect: false },
+          { text: "Haskellのコンパイラが結果の型を推論できないから（型注釈が必要）", isCorrect: true },
+          { text: "read は廃止予定の関数だから", isCorrect: false }
+        ],
+        explanation: "<code>read</code> の型シグネチャは <code>Read a => String -> a</code> です。つまり「文字列を受け取り、<strong>何らかの <code>Read</code> インスタンスの型</strong>を返す」のですが、その「何らかの型」が何なのかコンパイラが判断できません。<br>後続の式が使われていれば推論できますが（例：<code>read \"8.2\" + 3.8</code> なら <code>Float</code> と推論）、単独では型が確定できずランタイムエラーになります。解決策は<strong>型注釈</strong>：<code>read \"4\" :: Int</code>"
+      },
+      {
+        qNumText: "Question 6",
+        question: "<code>show</code> 関数を使うと何が起きますか？",
+        code: `<span class="func">ghci</span>> <span class="func">show</span> <span class="number">3</span>
+<span class="string">"3"</span>
+<span class="func">ghci</span>> <span class="func">show</span> <span class="keyword">True</span>
+<span class="string">"True"</span>`,
+        choices: [
+          { text: "値をコンソールに出力する（print と同じ）", isCorrect: false },
+          { text: "Show 型クラスのインスタンスである値を String に変換する", isCorrect: true },
+          { text: "任意の型をInt型にキャストする", isCorrect: false },
+          { text: "値の型名を文字列として返す（:t と同じ）", isCorrect: false }
+        ],
+        explanation: "<code>show</code> は <code>Show</code> 型クラスのメソッドで、値を<strong>文字列表現（<code>String</code>）に変換</strong>します。<br><code>print</code> は内部的に <code>putStrLn (show x)</code> を実行しているので、コンソール出力とは異なります。<code>show 3</code> は <code>\"3\"</code>（String）を返すだけで出力はしません。<code>Show</code> 型クラスは <code>Read</code> と対をなす関係で、<code>read (show x) == x</code> が成り立つように設計されています。"
+      },
+      {
+        qNumText: "Question 7",
+        question: "<code>Bounded</code> 型クラスについて、次のコードの実行結果として正しいものはどれですか？",
+        code: `<span class="func">ghci</span>> maxBound :: (<span class="keyword">Bool</span>, <span class="type">Int</span>, <span class="type">Char</span>)`,
+        choices: [
+          { text: "エラー：タプルは Bounded のインスタンスではないため", isCorrect: false },
+          { text: "(True, 9223372036854775807, '\\1114111')", isCorrect: true },
+          { text: "(False, -9223372036854775808, '\\0')", isCorrect: false },
+          { text: "(True, 2147483647, 'z')", isCorrect: false }
+        ],
+        explanation: "Haskellでは<strong>タプルの全構成要素が <code>Bounded</code> のインスタンスであれば、そのタプル自身も <code>Bounded</code> のインスタンス</strong>になります！<br>各要素の <code>maxBound</code> が組み合わさり：<code>Bool</code> の最大値は <code>True</code>、<code>Int</code> の最大値は 64ビット整数の上限 <code>9223372036854775807</code>、<code>Char</code> の最大値は Unicode の最大コードポイント <code>'\\1114111'</code> となります。"
+      }
     ];
 
     let currentIdx = 0;
@@ -571,7 +605,7 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
         resultsAchievementText.innerText = "お見事！かなりHaskellの感覚が掴めてきていますね！✨";
         playConfetti(1);
       } else {
-        resultsAchievementText.innerText = "お疲れ様でした！もう一度解き直して、エラーの挙動などを確認してみましょう！📚";
+        resultsAchievementText.innerText = "お疲れ様でした！もう一度解き直して、型クラスの概念を確認してみましょう！📚";
       }
     }
 
@@ -587,4 +621,3 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
   </script>
 </body>
 </html>
-```
