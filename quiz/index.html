@@ -1,73 +1,23 @@
-# Skill: Haskell Interactive Learning Quiz Generator
-
-This skill instructs the agent on how to automatically generate a beautiful, interactive HTML quiz based on the user's daily Haskell learning notes (like `memo.md`).
-
----
-
-## 🎯 Goal
-Create an interactive, premium-designed, gamified HTML quiz review page for the user's daily study session. The quiz should test gotchas, core concepts, and code execution results.
-
----
-
-## 📋 Step-by-Step Instructions
-
-### Step 1: Analyze Learning Notes
-- Locate and read the user's daily learning notes (e.g., `memo.md` in the workspace).
-- Determine the number of questions to generate:
-  - By default, generate **3 questions**.
-  - If the volume or content of today's notes is high (e.g., covering many different topics, long descriptions, or multiple sub-sections), dynamically scale the number of questions, up to a maximum of **10 questions**.
-- Identify the key topics, "gotchas", syntax nuances, or common errors mentioned in today's notes to match the decided number of questions.
-- Focus on questions that test *why* a behavior occurs (conceptual understanding) rather than just trivial recall.
-
-### Step 2: Formulate Dynamic Questions (3 to 10 Questions)
-- Formulate the decided number of questions (minimum 3, maximum 10) covering a diverse range of topics:
-  - Core syntax/operation or gotcha (e.g., Range behavior, lazy evaluation).
-  - Function behavior (e.g., `tail`, `init`, `head` on empty list, boundary cases).
-  - Types and list structures (e.g., `Char` vs `String` list concatenation, operator differences like `:` vs `++`).
-  - Any new advanced/specific topics or nuances introduced in the notes.
-- For each question:
-  - Create exactly **4 multiple-choice options** (A, B, C, D).
-  - Ensure only **one** option is correct.
-  - Write a clear, encouraging, and highly educational explanation for the answer, citing the reason why Haskell behaves this way.
-
-### Step 3: Populate the Interactive HTML Template
-- Use the **Premium HTML & CSS Template** below.
-- Replace the following placeholders in the template:
-  - **Date**: Find the current local time / date and format it as `YYYY.MM.DD` (e.g., `2026.05.25`).
-  - **Subtitle**: Change `{YYYY.MM.DD} — リスト・レンジ・型についての3問` to `{YYYY.MM.DD} — {学習トピック}についての{N}問` matching the actual number of generated questions `{N}`.
-  - **Quiz Data (`quizData` array in JS)**: Inject the questions, code snippets, choices, and explanations exactly in the structure specified.
-- Use syntax-colored HTML tags (like `<span class="keyword">`, `<span class="comment">`) in the JS code blocks to match the dark editor style.
-
-### Step 4: Write and Execute
-- Save the completed HTML page to `/quiz/{YYYYMMDD}_quiz.html` (e.g., `/quiz/20260525_quiz.html`).
-- **Do not overwrite** past quizzes unless explicitly asked to do so; always create a new dated file.
-- Proactively run terminal commands to open the quiz file for the user (e.g., `open quiz/{YYYYMMDD}_quiz.html` on Mac).
-- Present a concise, polite summary in the chat of today's quiz topics and how to access the file.
-
----
-
-## 💎 Premium HTML & CSS Template
-
-Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, the document title, and subtitle metadata.
-
-```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Haskell 今日の学びクイズ - {YYYY.MM.DD}</title>
-  
+  <title>Haskell 学びクイズ</title>
+
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
+
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  
+
   <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Manifest (static load) -->
+  <script src="data/manifest.js"></script>
 
   <style>
     /* Reset & CSS Variables */
@@ -86,16 +36,16 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --text-muted: #64748b;
-      
+
       --accent-primary: #6366f1;
       --accent-secondary: #a855f7;
       --accent-success: #10b981;
       --accent-error: #f43f5e;
-      
+
       --glow-accent: rgba(99, 102, 241, 0.25);
       --glow-success: rgba(16, 185, 129, 0.25);
       --glow-error: rgba(244, 63, 94, 0.25);
-      
+
       --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -308,6 +258,18 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
     }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(99, 102, 241, 0.45); }
 
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      box-shadow: none;
+    }
+    .btn-ghost:hover {
+      background: var(--bg-glass-hover);
+      color: var(--text-primary);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
     /* Results */
     .results-screen { text-align: center; display: none; flex-direction: column; align-items: center; justify-content: center; animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .trophy-icon { color: #eab308; width: 72px; height: 72px; filter: drop-shadow(0 4px 12px rgba(234, 179, 8, 0.4)); margin-bottom: 1.5rem; }
@@ -318,10 +280,88 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
     .stat-val.success-color { color: var(--accent-success); }
     .stat-lbl { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
     .results-message { color: var(--text-secondary); font-size: 1rem; margin-bottom: 2rem; max-width: 440px; }
+    .results-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 
     /* Syntax Highlighting */
     .keyword { color: #f472b6; font-weight: bold; }
     .comment { color: #64748b; font-style: italic; }
+
+    /* ===== Dashboard (new screen, same design tone) ===== */
+    .dashboard-screen { display: flex; flex-direction: column; gap: 1.5rem; animation: fadeInDown 0.5s ease-out; }
+    .dash-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-secondary);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dash-block {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 1.25rem 1.4rem;
+    }
+    .latest-meta { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; }
+    .latest-meta strong { color: var(--text-primary); font-weight: 700; }
+    .latest-date { color: var(--accent-secondary); font-weight: 700; font-size: 0.85rem; }
+
+    .review-controls { display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap; }
+    .review-controls label { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); }
+    .select-input {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 12px;
+      cursor: pointer;
+      outline: none;
+    }
+    .select-input:focus { border-color: var(--accent-primary); }
+
+    .quiz-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .quiz-list-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      text-align: left;
+      width: 100%;
+      color: inherit;
+      font-family: inherit;
+    }
+    .quiz-list-item:hover {
+      background: var(--bg-glass-hover);
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
+    }
+    .quiz-list-main { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+    .quiz-list-date { font-size: 0.78rem; font-weight: 700; color: var(--accent-secondary); }
+    .quiz-list-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; }
+    .quiz-list-count {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 0.3rem 0.75rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
 
     @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -333,19 +373,20 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
 <body>
 
   <div class="app-container">
-    
+
     <header>
       <div class="badge">
         <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
         <span>Haskell Learning Review</span>
       </div>
-      <h1>今日の学びクイズ</h1>
-      <p class="subtitle">{YYYY.MM.DD} — {学習トピック}についての{N}問</p>
+      <h1 id="app-title">Haskell 学びクイズ</h1>
+      <p class="subtitle" id="app-subtitle">日々の学びを4択で振り返る</p>
     </header>
 
-    <div class="progress-wrapper">
+    <!-- Progress Tracker (quiz mode only) -->
+    <div class="progress-wrapper" id="progress-wrapper" style="display: none;">
       <div class="progress-meta">
-        <span id="current-question-num">Question 1 of {N}</span>
+        <span id="current-question-num">Question 1 of 3</span>
         <span id="score-meta">Score: 0 / 0</span>
       </div>
       <div class="progress-bar-container">
@@ -354,12 +395,63 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
     </div>
 
     <div class="card" id="quiz-card">
-      
+
+      <!-- Dashboard Screen -->
+      <div class="dashboard-screen" id="dashboard-screen">
+
+        <div>
+          <div class="dash-section-title">
+            <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+            <span>最新のクイズ</span>
+          </div>
+          <div class="dash-block">
+            <p class="latest-meta">
+              <span class="latest-date" id="latest-date"></span><br>
+              <strong id="latest-title"></strong>
+            </p>
+            <button class="btn" id="start-latest-btn">
+              <i data-lucide="play" style="width: 18px; height: 18px;"></i>
+              <span>最新のクイズを始める</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="dash-section-title">
+            <i data-lucide="repeat" style="width: 14px; height: 14px;"></i>
+            <span>復習モード</span>
+          </div>
+          <div class="dash-block">
+            <div class="review-controls">
+              <label for="review-count">問題数</label>
+              <select class="select-input" id="review-count">
+                <option value="5">5問</option>
+                <option value="10" selected>10問</option>
+                <option value="20">20問</option>
+              </select>
+              <button class="btn" id="start-review-btn">
+                <i data-lucide="shuffle" style="width: 18px; height: 18px;"></i>
+                <span>復習を始める</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="dash-section-title">
+            <i data-lucide="history" style="width: 14px; height: 14px;"></i>
+            <span>過去のクイズ</span>
+          </div>
+          <div class="quiz-list" id="quiz-list"></div>
+        </div>
+
+      </div>
+
       <!-- Quiz Screen -->
-      <div class="question-screen" id="question-screen">
+      <div class="question-screen" id="question-screen" style="display: none;">
         <div class="question-number" id="screen-q-num">Question 1</div>
         <div class="question-text" id="screen-q-text">質問テキスト</div>
-        
+
         <pre><div class="code-lang">haskell</div><code id="code-snippet">コード</code></pre>
 
         <div class="choices-list" id="choices-container"></div>
@@ -382,10 +474,10 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
         <i data-lucide="trophy" class="trophy-icon"></i>
         <h2 class="results-title">Quiz Completed!</h2>
         <p class="results-message" id="results-achievement-text">素晴らしい！今日のHaskellの学びが身についています！</p>
-        
+
         <div class="results-stats">
           <div class="stat-box">
-            <div class="stat-val success-color" id="final-score">{N} / {N}</div>
+            <div class="stat-val success-color" id="final-score">3 / 3</div>
             <div class="stat-lbl">正解数</div>
           </div>
           <div class="stat-box">
@@ -394,10 +486,16 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
           </div>
         </div>
 
-        <button class="btn" id="retry-btn">
-          <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
-          <span>もう一度挑戦する</span>
-        </button>
+        <div class="results-actions">
+          <button class="btn" id="retry-btn">
+            <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
+            <span>もう一度挑戦する</span>
+          </button>
+          <button class="btn btn-ghost" id="home-btn">
+            <i data-lucide="home" style="width: 18px; height: 18px;"></i>
+            <span>ダッシュボードへ戻る</span>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -409,26 +507,67 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
   </div>
 
   <script>
-    // Injected Quiz Data
-    const quizData = [
-      {
-        qNumText: "Question 1",
-        question: "質問テキスト",
-        code: `Haskellコードスニペット`,
-        choices: [
-          { text: "選択肢A", isCorrect: false },
-          { text: "選択肢B (正解)", isCorrect: true },
-          { text: "選択肢C", isCorrect: false },
-          { text: "選択肢D", isCorrect: false }
-        ],
-        explanation: "正解の解説テキスト。"
-      },
-      // ...他の問題を追加（計3〜10問）
-    ];
+    // ===================================================================
+    // Data loading (file:// safe — dynamic <script> append, no fetch/XHR)
+    // ===================================================================
+    window.QUIZ_DATA = window.QUIZ_DATA || {};
+    const MANIFEST = window.QUIZ_MANIFEST || [];
+    const loadedFiles = {}; // date -> Promise (dedupe; never reload a file)
 
-    let currentIdx = 0;
-    let score = 0;
-    let answered = false;
+    function loadDataFile(date) {
+      if (loadedFiles[date]) return loadedFiles[date];
+      // Already present (e.g. loaded earlier) — resolve immediately.
+      if (window.QUIZ_DATA[date]) {
+        loadedFiles[date] = Promise.resolve();
+        return loadedFiles[date];
+      }
+      loadedFiles[date] = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = `data/${date}.js`;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error(`Failed to load data/${date}.js`));
+        document.head.appendChild(s);
+      });
+      return loadedFiles[date];
+    }
+
+    // ===================================================================
+    // localStorage history (UI-less; failures are non-fatal)
+    // ===================================================================
+    const HISTORY_KEY = "haskellQuizHistory";
+
+    function recordAnswer(questionId, isCorrect) {
+      if (!questionId) return;
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        const history = raw ? JSON.parse(raw) : {};
+        const entry = history[questionId] || { attempts: 0, correct: 0, last: null };
+        entry.attempts += 1;
+        if (isCorrect) entry.correct += 1;
+        entry.last = new Date().toISOString();
+        history[questionId] = entry;
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      } catch (e) {
+        // localStorage unavailable / quota / parse error — ignore, keep playing.
+      }
+    }
+
+    // ===================================================================
+    // DOM references
+    // ===================================================================
+    const appSubtitle = document.getElementById("app-subtitle");
+    const progressWrapper = document.getElementById("progress-wrapper");
+
+    const dashboardScreen = document.getElementById("dashboard-screen");
+    const questionScreen = document.getElementById("question-screen");
+    const resultsScreen = document.getElementById("results-screen");
+
+    const latestDateEl = document.getElementById("latest-date");
+    const latestTitleEl = document.getElementById("latest-title");
+    const startLatestBtn = document.getElementById("start-latest-btn");
+    const reviewCountSelect = document.getElementById("review-count");
+    const startReviewBtn = document.getElementById("start-review-btn");
+    const quizListEl = document.getElementById("quiz-list");
 
     const qNumElement = document.getElementById("screen-q-num");
     const qTextElement = document.getElementById("screen-q-text");
@@ -439,30 +578,166 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
     const explanationText = document.getElementById("explanation-text");
     const actionContainer = document.getElementById("action-container");
     const nextBtn = document.getElementById("next-btn");
-    
+
     const currentQMeta = document.getElementById("current-question-num");
     const scoreMeta = document.getElementById("score-meta");
     const progressBar = document.getElementById("progress-bar");
-    
-    const resultsScreen = document.getElementById("results-screen");
-    const questionScreen = document.getElementById("question-screen");
+
     const finalScore = document.getElementById("final-score");
     const finalAccuracy = document.getElementById("final-accuracy");
     const resultsAchievementText = document.getElementById("results-achievement-text");
     const retryBtn = document.getElementById("retry-btn");
+    const homeBtn = document.getElementById("home-btn");
 
-    lucide.createIcons();
+    // ===================================================================
+    // Quiz session state
+    // ===================================================================
+    let quizData = [];        // array of question objects for the current session
+    let currentIdx = 0;
+    let score = 0;
+    let answered = false;
+    let currentSubtitle = ""; // subtitle to restore on retry
+    let lastSession = null;   // { type, date } — to reproduce on retry
 
+    // ===================================================================
+    // Helpers
+    // ===================================================================
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function formatDate(d) {
+      // "20260610" -> "2026.06.10"
+      if (!d || d.length !== 8) return d;
+      return `${d.slice(0, 4)}.${d.slice(4, 6)}.${d.slice(6, 8)}`;
+    }
+
+    // ===================================================================
+    // Dashboard
+    // ===================================================================
+    function renderDashboard() {
+      if (MANIFEST.length === 0) {
+        latestDateEl.innerText = "";
+        latestTitleEl.innerText = "クイズデータが見つかりません";
+        startLatestBtn.disabled = true;
+        return;
+      }
+
+      const latest = MANIFEST[MANIFEST.length - 1];
+      latestDateEl.innerText = formatDate(latest.date);
+      latestTitleEl.innerText = `${latest.title}（${latest.count}問）`;
+
+      // Past quizzes, newest first.
+      quizListEl.innerHTML = "";
+      MANIFEST.slice().reverse().forEach((entry) => {
+        const item = document.createElement("button");
+        item.className = "quiz-list-item";
+        item.innerHTML = `
+          <span class="quiz-list-main">
+            <span class="quiz-list-date">${formatDate(entry.date)}</span>
+            <span class="quiz-list-title">${entry.title}</span>
+          </span>
+          <span class="quiz-list-count">${entry.count}問</span>
+        `;
+        item.addEventListener("click", () => startDailyQuiz(entry.date));
+        quizListEl.appendChild(item);
+      });
+
+      lucide.createIcons();
+    }
+
+    function showDashboard() {
+      dashboardScreen.style.display = "flex";
+      questionScreen.style.display = "none";
+      resultsScreen.style.display = "none";
+      progressWrapper.style.display = "none";
+      appSubtitle.innerText = "日々の学びを4択で振り返る";
+      lucide.createIcons();
+    }
+
+    // ===================================================================
+    // Start sessions
+    // ===================================================================
+    function startDailyQuiz(date) {
+      const entry = MANIFEST.find(m => m.date === date);
+      const title = entry ? entry.title : "";
+      const count = entry ? entry.count : "";
+      startLatestBtn.disabled = true;
+      loadDataFile(date).then(() => {
+        const data = window.QUIZ_DATA[date];
+        if (!data || !data.questions) throw new Error("no questions");
+        quizData = data.questions.slice();
+        const subtitle = `${formatDate(date)} — ${data.title}についての${quizData.length}問`;
+        lastSession = { type: "daily", date };
+        startQuiz(subtitle);
+      }).catch((e) => {
+        alert(`クイズデータの読み込みに失敗しました: ${date}`);
+      }).finally(() => {
+        startLatestBtn.disabled = false;
+      });
+    }
+
+    function startReviewQuiz() {
+      const n = parseInt(reviewCountSelect.value, 10);
+      startReviewBtn.disabled = true;
+      // Load every data file, then build a global pool.
+      Promise.all(MANIFEST.map(m => loadDataFile(m.date).catch(() => null)))
+        .then(() => {
+          let pool = [];
+          MANIFEST.forEach(m => {
+            const data = window.QUIZ_DATA[m.date];
+            if (data && data.questions) pool = pool.concat(data.questions);
+          });
+          if (pool.length === 0) throw new Error("empty pool");
+
+          let picked = shuffle(pool);
+          if (n < picked.length) picked = picked.slice(0, n);
+
+          // Shuffle choice order within each question (isCorrect drives grading).
+          quizData = picked.map(q => Object.assign({}, q, { choices: shuffle(q.choices) }));
+
+          const subtitle = `復習 — 全期間から${quizData.length}問`;
+          lastSession = { type: "review", count: n };
+          startQuiz(subtitle);
+        })
+        .catch(() => {
+          alert("復習データの読み込みに失敗しました");
+        })
+        .finally(() => {
+          startReviewBtn.disabled = false;
+        });
+    }
+
+    function startQuiz(subtitle) {
+      currentSubtitle = subtitle;
+      currentIdx = 0;
+      score = 0;
+      appSubtitle.innerText = subtitle;
+      dashboardScreen.style.display = "none";
+      resultsScreen.style.display = "none";
+      questionScreen.style.display = "flex";
+      progressWrapper.style.display = "block";
+      loadQuestion(currentIdx);
+    }
+
+    // ===================================================================
+    // Quiz progression (reused from archive template, minimal changes)
+    // ===================================================================
     function loadQuestion(idx) {
       answered = false;
       explanationPanel.style.display = "none";
       actionContainer.style.display = "none";
-      
+
       const qData = quizData[idx];
-      qNumElement.innerHTML = qData.qNumText;
+      qNumElement.innerHTML = `Question ${idx + 1}`;
       qTextElement.innerHTML = qData.question;
       codeSnippet.innerHTML = qData.code;
-      
+
       currentQMeta.innerText = `Question ${idx + 1} of ${quizData.length}`;
       scoreMeta.innerText = `Score: ${score} / ${idx}`;
       progressBar.style.width = `${(idx / quizData.length) * 100}%`;
@@ -501,6 +776,10 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
       });
 
       const isCorrect = selectedChoice.isCorrect;
+
+      // localStorage record (non-fatal).
+      recordAnswer(qData.id, isCorrect);
+
       if (isCorrect) {
         score++;
         playConfetti(0.3);
@@ -520,7 +799,7 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
       explanationText.innerHTML = qData.explanation;
       explanationPanel.style.display = "block";
       actionContainer.style.display = "flex";
-      
+
       scoreMeta.innerText = `Score: ${score} / ${currentIdx + 1}`;
       lucide.createIcons();
     }
@@ -559,7 +838,7 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
       resultsScreen.style.display = "flex";
       progressBar.style.width = "100%";
       currentQMeta.innerText = `Quiz Completed`;
-      
+
       finalScore.innerText = `${score} / ${quizData.length}`;
       const accuracyPercent = Math.round((score / quizData.length) * 100);
       finalAccuracy.innerText = `${accuracyPercent}%`;
@@ -573,18 +852,33 @@ Use the exact HTML below as a boilerplate. Make sure to only edit `quizData`, th
       } else {
         resultsAchievementText.innerText = "お疲れ様でした！もう一度解き直して、エラーの挙動などを確認してみましょう！📚";
       }
+      lucide.createIcons();
     }
 
     retryBtn.addEventListener("click", () => {
-      currentIdx = 0;
-      score = 0;
-      questionScreen.style.display = "flex";
-      resultsScreen.style.display = "none";
-      loadQuestion(currentIdx);
+      // Reproduce the same session type. Review reshuffles a fresh pool.
+      if (lastSession && lastSession.type === "review") {
+        startReviewQuiz();
+      } else {
+        // daily: reuse the already-loaded quizData order
+        startQuiz(currentSubtitle);
+      }
     });
 
-    loadQuestion(currentIdx);
+    homeBtn.addEventListener("click", showDashboard);
+
+    startLatestBtn.addEventListener("click", () => {
+      if (MANIFEST.length === 0) return;
+      startDailyQuiz(MANIFEST[MANIFEST.length - 1].date);
+    });
+    startReviewBtn.addEventListener("click", startReviewQuiz);
+
+    // ===================================================================
+    // Init
+    // ===================================================================
+    renderDashboard();
+    showDashboard();
+    lucide.createIcons();
   </script>
 </body>
 </html>
-```
