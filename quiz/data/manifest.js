@@ -68,5 +68,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260610",
     "title": "リスト内包表記内のletとGHCiのletスコープ",
     "count": 3
+  },
+  {
+    "date": "20260612",
+    "title": "case式",
+    "count": 5
   }
 ];
