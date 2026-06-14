@@ -73,5 +73,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260612",
     "title": "case式",
     "count": 5
+  },
+  {
+    "date": "20260613",
+    "title": "再帰と基底部",
+    "count": 5
   }
 ];
