@@ -78,5 +78,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260613",
     "title": "再帰と基底部",
     "count": 5
+  },
+  {
+    "date": "20260614",
+    "title": "replicate'とtake'の再帰実装",
+    "count": 5
   }
 ];
