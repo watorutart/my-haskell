@@ -88,5 +88,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260615",
     "title": "再帰で作る reverse・repeat・zip・elem",
     "count": 5
+  },
+  {
+    "date": "20260617",
+    "title": "クイックソート・再帰の定石・内包表記=filter",
+    "count": 6
   }
 ];
