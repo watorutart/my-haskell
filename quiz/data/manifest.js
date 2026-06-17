@@ -83,5 +83,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260614",
     "title": "replicate'とtake'の再帰実装",
     "count": 5
+  },
+  {
+    "date": "20260615",
+    "title": "再帰で作る reverse・repeat・zip・elem",
+    "count": 5
   }
 ];
