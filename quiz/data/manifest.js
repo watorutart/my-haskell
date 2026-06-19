@@ -93,5 +93,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260617",
     "title": "クイックソート・再帰の定石・内包表記=filter",
     "count": 6
+  },
+  {
+    "date": "20260618",
+    "title": "カリー化・部分適用・高階関数",
+    "count": 6
   }
 ];
