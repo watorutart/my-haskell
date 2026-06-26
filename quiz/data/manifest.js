@@ -103,5 +103,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260619",
     "title": "セクションと中置関数の部分適用",
     "count": 6
+  },
+  {
+    "date": "20260625",
+    "title": "高階関数applyTwiceとGHCiモジュール管理",
+    "count": 8
   }
 ];
