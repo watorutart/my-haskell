@@ -108,5 +108,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260625",
     "title": "高階関数applyTwiceとGHCiモジュール管理",
     "count": 8
+  },
+  {
+    "date": "20260626",
+    "title": "zipWith'の実装と高階関数の応用",
+    "count": 5
   }
 ];
