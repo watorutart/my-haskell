@@ -113,5 +113,15 @@ window.QUIZ_MANIFEST = [
     "date": "20260626",
     "title": "zipWith'の実装と高階関数の応用",
     "count": 5
+  },
+  {
+    "date": "20260627",
+    "title": "flip'による引数の入れ替えとzipWith応用",
+    "count": 5
+  },
+  {
+    "date": "20260630",
+    "title": "map・filterの実装とquicksortへの応用",
+    "count": 6
   }
 ];
