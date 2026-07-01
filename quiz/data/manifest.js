@@ -123,5 +123,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260630",
     "title": "map・filterの実装とquicksortへの応用",
     "count": 6
+  },
+  {
+    "date": "20260701",
+    "title": "takeWhile・コラッツ列・遅延評価と無限リスト",
+    "count": 6
   }
 ];
