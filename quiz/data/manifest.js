@@ -128,5 +128,15 @@ window.QUIZ_MANIFEST = [
     "date": "20260701",
     "title": "takeWhile・コラッツ列・遅延評価と無限リスト",
     "count": 6
+  },
+  {
+    "date": "20260702",
+    "title": "ラムダ式・パターンマッチ・カリー化との等価性",
+    "count": 6
+  },
+  {
+    "date": "20260702-2",
+    "title": "高階型・イータ簡約とfoldlの評価順序",
+    "count": 5
   }
 ];
