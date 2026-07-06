@@ -138,5 +138,15 @@ window.QUIZ_MANIFEST = [
     "date": "20260702-2",
     "title": "高階型・イータ簡約とfoldlの評価順序",
     "count": 5
+  },
+  {
+    "date": "20260704",
+    "title": "foldlとfoldrの型・無限リストへの対応・畳み込みの効率",
+    "count": 5
+  },
+  {
+    "date": "20260705",
+    "title": "畳み込み(fold)の評価順序と境界ケース",
+    "count": 6
   }
 ];
