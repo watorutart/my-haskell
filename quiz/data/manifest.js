@@ -148,5 +148,15 @@ window.QUIZ_MANIFEST = [
     "date": "20260705",
     "title": "畳み込み(fold)の評価順序と境界ケース",
     "count": 6
+  },
+  {
+    "date": "20260706",
+    "title": "scanl/scanl1と$演算子",
+    "count": 5
+  },
+  {
+    "date": "20260707",
+    "title": "関数合成(.)",
+    "count": 5
   }
 ];
