@@ -173,5 +173,15 @@ window.QUIZ_MANIFEST = [
     "date": "20260710",
     "title": "モジュールのインポートとポイントフリースタイル",
     "count": 6
+  },
+  {
+    "date": "20260711",
+    "title": "words・group・sortによる単語カウント",
+    "count": 5
+  },
+  {
+    "date": "20260712",
+    "title": "tails・isPrefixOf・any・isInfixOfで探す部分リスト",
+    "count": 5
   }
 ];
