@@ -183,5 +183,15 @@ window.QUIZ_MANIFEST = [
     "date": "20260712",
     "title": "tails・isPrefixOf・any・isInfixOfで探す部分リスト",
     "count": 5
+  },
+  {
+    "date": "20260713",
+    "title": "Data.Charとシーザー暗号",
+    "count": 5
+  },
+  {
+    "date": "20260714",
+    "title": "foldlの遅延評価とスタックオーバーフロー",
+    "count": 4
   }
 ];
