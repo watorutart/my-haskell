@@ -193,5 +193,15 @@ window.QUIZ_MANIFEST = [
     "date": "20260714",
     "title": "foldlの遅延評価とスタックオーバーフロー",
     "count": 4
+  },
+  {
+    "date": "20260716",
+    "title": "digitToIntとfindによる桁和探索",
+    "count": 5
+  },
+  {
+    "date": "20260717",
+    "title": "連想リストとfoldrによるfindKeyの実装",
+    "count": 5
   }
 ];
