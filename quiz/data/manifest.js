@@ -203,5 +203,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260717",
     "title": "連想リストとfoldrによるfindKeyの実装",
     "count": 5
+  },
+  {
+    "date": "20260723",
+    "title": "Data.Mapとfrom List系関数",
+    "count": 6
   }
 ];
