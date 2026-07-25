@@ -208,5 +208,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260723",
     "title": "Data.Mapとfrom List系関数",
     "count": 6
+  },
+  {
+    "date": "20260724",
+    "title": "モジュールの階層構造とqualified importによる名前衝突の回避",
+    "count": 6
   }
 ];
