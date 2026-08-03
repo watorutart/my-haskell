@@ -213,5 +213,15 @@ window.QUIZ_MANIFEST = [
     "date": "20260724",
     "title": "モジュールの階層構造とqualified importによる名前衝突の回避",
     "count": 6
+  },
+  {
+    "date": "20260725",
+    "title": "dataキーワードによる自作データ型の定義",
+    "count": 4
+  },
+  {
+    "date": "20260803",
+    "title": "値コンストラクタの正体とderiving Show",
+    "count": 6
   }
 ];
