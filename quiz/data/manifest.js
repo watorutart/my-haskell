@@ -223,5 +223,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260803",
     "title": "値コンストラクタの正体とderiving Show",
     "count": 6
+  },
+  {
+    "date": "20260804",
+    "title": "Point型による構造化とネストしたパターンマッチ",
+    "count": 7
   }
 ];
