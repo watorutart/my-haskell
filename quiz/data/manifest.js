@@ -248,5 +248,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260813",
     "title": "多相データ型Carとデータ宣言の型クラス制約",
     "count": 7
+  },
+  {
+    "date": "20260814",
+    "title": "自作データ型・型クラス制約・deriving",
+    "count": 4
   }
 ];
