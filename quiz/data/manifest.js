@@ -253,5 +253,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260814",
     "title": "自作データ型・型クラス制約・deriving",
     "count": 4
+  },
+  {
+    "date": "20260825",
+    "title": "レコード型へのEq自動導出",
+    "count": 6
   }
 ];
