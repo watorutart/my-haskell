@@ -258,5 +258,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260825",
     "title": "レコード型へのEq自動導出",
     "count": 6
+  },
+  {
+    "date": "20260830",
+    "title": "ShowとReadと型注釈",
+    "count": 6
   }
 ];
