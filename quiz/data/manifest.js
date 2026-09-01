@@ -263,5 +263,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260830",
     "title": "ShowとReadと型注釈",
     "count": 6
+  },
+  {
+    "date": "20260901",
+    "title": "Ordの自動導出と値コンストラクタの定義順",
+    "count": 6
   }
 ];
