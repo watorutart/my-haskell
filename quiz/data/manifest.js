@@ -268,5 +268,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260901",
     "title": "Ordの自動導出と値コンストラクタの定義順",
     "count": 6
+  },
+  {
+    "date": "20260902",
+    "title": "列挙型とEnum・Boundedの自動導出",
+    "count": 6
   }
 ];
