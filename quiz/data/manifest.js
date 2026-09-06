@@ -273,5 +273,10 @@ window.QUIZ_MANIFEST = [
     "date": "20260902",
     "title": "列挙型とEnum・Boundedの自動導出",
     "count": 6
+  },
+  {
+    "date": "20260903",
+    "title": "型シノニムとStringの正体",
+    "count": 6
   }
 ];
